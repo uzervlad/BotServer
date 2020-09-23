@@ -124,7 +124,7 @@ namespace BotServer
 
                 int combo = !query.ContainsKey("combo") ? calculator.GetMaxCombo(playableMap) : int.Parse(query["combo"]);
                 int miss = !query.ContainsKey("miss") ? 0 : int.Parse(query["miss"]);
-                double acc = !query.ContainsKey("acc") ? 1 : double.Parse(query["acc"]) / 100;
+                double acc = !query.ContainsKey("acc") ? 1 : double.Parse(query["acc"].Replace(".", ",")) / 100;
                 int score = !query.ContainsKey("score") ? 1000000 : int.Parse(query["score"]);
 
                 double pp = failed
