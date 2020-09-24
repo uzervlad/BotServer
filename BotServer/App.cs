@@ -101,9 +101,6 @@ namespace BotServer
 
                 var map = cache.GetBeatmap(int.Parse(query["id"]));
 
-                // if(new string[]{ "mods", "combo", "miss", "acc", "score" }.Any(q => !query.ContainsKey(q)))
-                //     return JsonConvert.SerializeObject(new { error = "Some parameters are missing" });
-
                 var calculator = PPCalculatorHelpers.GetPPCalculator(map.RulesetID);
                 var playableMap = map.GetPlayableBeatmap(calculator.Ruleset.RulesetInfo);
 
