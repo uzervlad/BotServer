@@ -41,21 +41,23 @@ namespace BotServer
         {
             while(true)
             {
-                var context = listener.GetContextAsync().GetAwaiter().GetResult();
-                var request = context.Request;
-                var response = context.Response;
+                try {
+                    var context = listener.GetContextAsync().GetAwaiter().GetResult();
+                    var request = context.Request;
+                    var response = context.Response;
 
-                var path = request.Url.AbsolutePath;
+                    var path = request.Url.AbsolutePath;
 
-                if(endpoints.ContainsKey(path))
-                {
-                    var result = endpoints.GetValueOrDefault(path)(request, response);
-                    byte[] data = Encoding.UTF8.GetBytes(result);
-                    response.ContentType = "application/json";
-                    response.OutputStream.Write(data);
-                }
+                    if(endpoints.ContainsKey(path))
+                    {
+                        var result = endpoints.GetValueOrDefault(path)(request, response);
+                        byte[] data = Encoding.UTF8.GetBytes(result);
+                        response.ContentType = "application/json";
+                        response.OutputStream.Write(data);
+                    }
 
-                response.Close();
+                    response.Close();
+                } catch(System.Net.HttpListenerException) {}
             }
         }
 
