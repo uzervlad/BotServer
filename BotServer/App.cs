@@ -65,6 +65,20 @@ namespace BotServer
                 var metadata = map.Metadata;
 
                 var calculator = PPCalculatorHelpers.GetPPCalculator(map.RulesetID);
+
+                int mode = map.RulesetID;
+
+                if (query.ContainsKey("mode") && map.RulesetID == 0)
+                {
+                    var playableMap = map.GetPlayableBeatmap(calculator.Ruleset.RulesetInfo);
+                    mode = int.Parse(query["mode"]);
+                    Ruleset ruleset = getRuleset(mode);
+                    calculator = PPCalculatorHelpers.GetPPCalculator(mode);
+                    var converter = ruleset.CreateBeatmapConverter(playableMap);
+                    playableMap = converter.Convert();
+                    map = new PPCalculator.WorkingBeatmap(playableMap);
+                }
+
                 var mods = query.ContainsKey("mods") ? calculator.getMods(query["mods"].Split(",")) : new List<Mod>();
 
                 var difficulty = map.GetDifficultyWithMods(mods);
@@ -78,7 +92,7 @@ namespace BotServer
                     artist = metadata.Artist,
                     creator = metadata.AuthorString,
                     version = map.BeatmapInfo.Version,
-                    mode = map.RulesetID,
+                    mode,
                     difficulty = getDifficulty(difficulty, attributes),
                     bpm = new
                     {
