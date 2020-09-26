@@ -92,6 +92,7 @@ namespace BotServer
                     artist = metadata.Artist,
                     creator = metadata.AuthorString,
                     version = map.BeatmapInfo.Version,
+                    beatmapsetID = map.BeatmapSetInfo.OnlineBeatmapSetID,
                     mode,
                     difficulty = getDifficulty(difficulty, attributes),
                     bpm = new
