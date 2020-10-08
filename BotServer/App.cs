@@ -11,6 +11,7 @@ using BotServer.PPCalculator;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using osu.Game.Rulesets;
+using osu.Game.Rulesets.Objects;
 using osu.Game.Rulesets.Osu;
 using osu.Game.Rulesets.Taiko;
 using osu.Game.Rulesets.Catch;
@@ -68,9 +69,10 @@ namespace BotServer
 
                 int mode = map.RulesetID;
 
+                var playableMap = map.GetPlayableBeatmap(calculator.Ruleset.RulesetInfo);
+
                 if (query.ContainsKey("mode") && map.RulesetID == 0)
                 {
-                    var playableMap = map.GetPlayableBeatmap(calculator.Ruleset.RulesetInfo);
                     mode = int.Parse(query["mode"]);
                     Ruleset ruleset = getRuleset(mode);
                     calculator = PPCalculatorHelpers.GetPPCalculator(mode);
@@ -93,6 +95,7 @@ namespace BotServer
                     creator = metadata.AuthorString,
                     version = map.BeatmapInfo.Version,
                     beatmapsetID = map.BeatmapSetInfo.OnlineBeatmapSetID,
+                    maxCombo = calculator.GetMaxCombo(playableMap),
                     mode,
                     difficulty = getDifficulty(difficulty, attributes),
                     bpm = new
@@ -132,7 +135,7 @@ namespace BotServer
                 var mods = query.ContainsKey("mods") ? query["mods"].Split(",") : new string[] { };
 
                 var failed = query.ContainsKey("fail");
-                var fail = failed ? map.Beatmap.HitObjects.Last(o => o.StartTime < double.Parse(query["fail"])).StartTime : 0;
+                var fail = calculator.GetTimeAtHits(playableMap, int.Parse(query["fail"]));
 
                 int combo = !query.ContainsKey("combo") ? calculator.GetMaxCombo(playableMap) : int.Parse(query["combo"]);
                 int miss = !query.ContainsKey("miss") ? 0 : int.Parse(query["miss"]);
@@ -151,6 +154,7 @@ namespace BotServer
                     pp,
                     fcpp,
                     sspp,
+                    progress = fail / playableMap.HitObjects.Last().GetEndTime(),
                     param = new
                     {
                         combo,

@@ -16,6 +16,13 @@ namespace BotServer.PPCalculator
         protected override int GetMaxCombo(IReadOnlyList<HitObject> hitObjects) =>
             hitObjects.Count + hitObjects.OfType<Slider>().Sum(s => s.NestedHitObjects.Count - 1);
 
+        protected override double GetTimeAtHits(IReadOnlyList<HitObject> hitObjects, int hits)
+        {
+            return hits > hitObjects.Count()
+                ? hitObjects.Last().GetEndTime()
+                : hitObjects[hits - 1].GetEndTime();
+        }
+
         protected override Dictionary<HitResult, int> GenerateHitResults(double accuracy, IReadOnlyList<HitObject> hitObjects, int countMiss)
         {
             var totalResultCount = hitObjects.Count;

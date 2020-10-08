@@ -18,6 +18,11 @@ namespace BotServer.PPCalculator
             + hitObjects.OfType<JuiceStream>().Sum(s => s.NestedHitObjects.Count - s.NestedHitObjects.OfType<TinyDroplet>().Count() - 1) 
             - hitObjects.OfType<BananaShower>().Count();
 
+        protected override double GetTimeAtHits(IReadOnlyList<HitObject> hitObjects, int hits)
+        {
+            return 0;
+        }
+
         protected override Dictionary<HitResult, int> GenerateHitResults(double accuracy, IReadOnlyList<HitObject> hitObjects, int countMiss)
         {
             var combo = GetMaxCombo(hitObjects);

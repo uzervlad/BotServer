@@ -82,6 +82,9 @@ namespace BotServer.PPCalculator
         public int GetMaxCombo(IBeatmap beatmap) => GetMaxCombo(beatmap.HitObjects);
         protected abstract int GetMaxCombo(IReadOnlyList<HitObject> hitObjects);
 
+        public double GetTimeAtHits(IBeatmap beatmap, int hits) => GetTimeAtHits(beatmap.HitObjects, hits);
+        protected abstract double GetTimeAtHits(IReadOnlyList<HitObject> hitObjects, int hits);
+
         protected abstract Dictionary<HitResult, int> GenerateHitResults(double accuracy, IReadOnlyList<HitObject> hitObjects, int countMiss);
 
         protected abstract double GetAccuracy(Dictionary<HitResult, int> hits);
