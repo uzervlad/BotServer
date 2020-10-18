@@ -135,7 +135,7 @@ namespace BotServer
                 var mods = query.ContainsKey("mods") ? query["mods"].Split(",") : new string[] { };
 
                 var failed = query.ContainsKey("fail");
-                var fail = calculator.GetTimeAtHits(playableMap, int.Parse(query["fail"]));
+                var fail = failed ? calculator.GetTimeAtHits(playableMap, int.Parse(query["fail"])) : 0;
 
                 int combo = !query.ContainsKey("combo") ? calculator.GetMaxCombo(playableMap) : int.Parse(query["combo"]);
                 int miss = !query.ContainsKey("miss") ? 0 : int.Parse(query["miss"]);
