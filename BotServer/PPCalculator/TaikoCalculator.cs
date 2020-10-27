@@ -18,7 +18,7 @@ namespace BotServer.PPCalculator
 
         protected override double GetTimeAtHits(IReadOnlyList<HitObject> hitObjects, int hits)
         {
-            return 0;
+            return hitObjects.OfType<Hit>().ElementAtOrDefault(hits - 1).StartTime;
         }
         
         protected override Dictionary<HitResult, int> GenerateHitResults(double accuracy, IReadOnlyList<HitObject> hitObjects, int countMiss)
