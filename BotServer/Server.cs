@@ -20,7 +20,7 @@ namespace BotServer
         {
             this.app = app;
             Console.WriteLine($"Listening on port {port}");
-            listener.Prefixes.Add($"http://localhost:{port}/");
+            listener.Prefixes.Add($"http://*:{port}/");
             listener.Start();
             Listen();
         }
