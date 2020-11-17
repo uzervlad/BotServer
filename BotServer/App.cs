@@ -2,6 +2,7 @@ using System;
 using System.Threading;
 using System.Collections.Generic;
 using System.Linq;
+using System.IO;
 using osu.Game.Beatmaps;
 using osu.Game.Rulesets.Mods;
 using osu.Game.Rulesets.Difficulty;
@@ -29,6 +30,8 @@ namespace BotServer
 
         public App(int port)
         {
+            cache.Token = File.ReadAllText("./token.txt");
+
             server = new Server(this, port);
 
             var appConsole = new AppConsole(this);
@@ -62,7 +65,8 @@ namespace BotServer
                 if(!query.ContainsKey("id"))
                     return JsonConvert.SerializeObject(new { error = "No ID provided" });
 
-                var map = cache.GetBeatmap(int.Parse(query["id"]));
+                var expirable = cache.GetBeatmap(int.Parse(query["id"]));
+                var map = expirable.map;
                 var metadata = map.Metadata;
 
                 var calculator = PPCalculatorHelpers.GetPPCalculator(map.RulesetID);
@@ -94,7 +98,7 @@ namespace BotServer
                     artist = metadata.Artist,
                     creator = metadata.AuthorString,
                     version = map.BeatmapInfo.Version,
-                    beatmapsetID = map.BeatmapSetInfo.OnlineBeatmapSetID,
+                    beatmapsetID = expirable.SetID,
                     maxCombo = calculator.GetMaxCombo(playableMap),
                     mode,
                     difficulty = getDifficulty(difficulty, attributes),
@@ -117,7 +121,7 @@ namespace BotServer
                 if(!query.ContainsKey("id"))
                     return JsonConvert.SerializeObject(new { error = "No ID provided" });
 
-                var map = cache.GetBeatmap(int.Parse(query["id"]));
+                var map = cache.GetBeatmap(int.Parse(query["id"])).map;
 
                 var calculator = PPCalculatorHelpers.GetPPCalculator(map.RulesetID);
                 var playableMap = map.GetPlayableBeatmap(calculator.Ruleset.RulesetInfo);
