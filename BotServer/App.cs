@@ -104,9 +104,9 @@ namespace BotServer
                     difficulty = getDifficulty(difficulty, attributes),
                     bpm = new
                     {
-                        min = Math.Round(controlPointInfo.BPMMinimum * 100) / 100,
-                        max = Math.Round(controlPointInfo.BPMMaximum * 100) / 100,
-                        avg = Math.Round(controlPointInfo.BPMMode * 100) / 100
+                        min = Math.Round(controlPointInfo.BPMMinimum),
+                        max = Math.Round(controlPointInfo.BPMMaximum),
+                        avg = Math.Round(controlPointInfo.BPMMode)
                     },
                     length = map.Beatmap.HitObjects.LastOrDefault().StartTime
                 });
