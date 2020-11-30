@@ -1,6 +1,7 @@
 using System;
 using System.Net;
 using System.Text;
+using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Collections.Generic;
@@ -20,7 +21,11 @@ namespace BotServer
         {
             this.app = app;
             Console.WriteLine($"Listening on port {port}");
-            listener.Prefixes.Add($"http://*:{port}/");
+            if(RuntimeInformation.IsOSPlatform(OSPlatform.Linux)) {
+                listener.Prefixes.Add($"http://*:{port}/");
+            } else {
+                listener.Prefixes.Add($"http://localhost:{port}/");
+            }
             listener.Start();
             Listen();
         }
