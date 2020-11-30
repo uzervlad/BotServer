@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using System.Net;
+using System.Text;
 using System.Threading;
 using System.Collections.Generic;
 using BotServer.PPCalculator;
@@ -62,14 +63,43 @@ namespace BotServer
 
         private int GetBeatmapsetID(int ID)
         {
+            return GetBeatmap(ID).SetID;
+        }
+
+        public APIBeatmap[] GetAPIBeatmapset(int SetID)
+        {
+            using(var client = new WebClient())
+            {
+                var byte_data = client.DownloadData($"https://osu.ppy.sh/api/get_beatmaps?k={Token}&s={SetID}");
+                var data = JsonConvert.DeserializeObject<APIBeatmap[]>(Encoding.Default.GetString(byte_data));
+                return data;
+            }
+        }
+
+        public APIBeatmap GetAPIBeatmap(int ID)
+        {
             using(var client = new WebClient())
             {
                 var byte_data = client.DownloadData($"https://osu.ppy.sh/api/get_beatmaps?k={Token}&b={ID}");
-                var data = JsonConvert.DeserializeObject<APIBeatmap[]>(System.Text.Encoding.Default.GetString(byte_data));
+                var data = JsonConvert.DeserializeObject<APIBeatmap[]>(Encoding.Default.GetString(byte_data));
                 try {
-                    return Int32.Parse(data[0].SetID);
+                    return data[0];
                 } catch {
-                    return 0;
+                    return null;
+                }
+            }
+        }
+
+        public APIBeatmap GetAPIBeatmap(string Hash)
+        {
+            using(var client = new WebClient())
+            {
+                var byte_data = client.DownloadData($"https://osu.ppy.sh/api/get_beatmaps?k={Token}&h={Hash}");
+                var data = JsonConvert.DeserializeObject<APIBeatmap[]>(Encoding.Default.GetString(byte_data));
+                try {
+                    return data[0];
+                } catch {
+                    return null;
                 }
             }
         }
@@ -97,10 +127,28 @@ namespace BotServer
             }
         }
 
-        private class APIBeatmap
+        public class APIBeatmap
         {
+            [JsonProperty("title")]
+            public string Title;
+
+            [JsonProperty("artist")]
+            public string Artist;
+
+            [JsonProperty("version")]
+            public string Version;
+
+            [JsonProperty("creator")]
+            public string Creator;
+
             [JsonProperty("beatmapset_id")]
-            public string SetID = "0";
+            public int SetID = 0;
+
+            [JsonProperty("beatmap_id")]
+            public int ID = 0;
+
+            [JsonProperty("difficultyrating")]
+            public float Stars = 0;
         }
     }
 }

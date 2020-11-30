@@ -168,6 +168,33 @@ namespace BotServer
                     }
                 });
             });
+
+            server.AddEndpoint("/api/getBeatmap", (req, res) => {
+                var query = Helpers.ParseQueryString(req.QueryString);
+
+                MapCache.APIBeatmap beatmap;
+
+                if(query.ContainsKey("hash"))
+                {
+                    beatmap = cache.GetAPIBeatmap(query["hash"]);
+                } 
+                else if(query.ContainsKey("id"))
+                {
+                    beatmap = cache.GetAPIBeatmap(Int32.Parse(query["id"]));
+                }
+                else return JsonConvert.SerializeObject(new { error = "No ID or MD5 provided" });
+
+                return JsonConvert.SerializeObject(beatmap);
+            });
+
+            server.AddEndpoint("/api/getBeatmapset", (req, res) => {
+                var query = Helpers.ParseQueryString(req.QueryString);
+
+                if(!query.ContainsKey("id"))
+                    return JsonConvert.SerializeObject(new { error = "No ID provided" });
+
+                return JsonConvert.SerializeObject(cache.GetAPIBeatmapset(Int32.Parse(query["id"])));
+            });
         }
 
         private object getDifficulty(BeatmapDifficulty difficulty, DifficultyAttributes attributes)
