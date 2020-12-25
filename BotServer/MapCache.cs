@@ -63,7 +63,7 @@ namespace BotServer
 
         private int GetBeatmapsetID(int ID)
         {
-            return GetBeatmap(ID).SetID;
+            return GetAPIBeatmap(ID).SetID;
         }
 
         public APIBeatmap[] GetAPIBeatmapset(int SetID)
