@@ -31,7 +31,7 @@ namespace BotServer
 
         public App(int port)
         {
-            cache.Token = File.ReadAllText("./token.txt");
+            cache.Token = File.ReadAllText("./token.txt").TrimEnd(Environment.NewLine.ToCharArray());
 
             server = new Server(this, port);
 
