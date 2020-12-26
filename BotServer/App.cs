@@ -1,6 +1,7 @@
 using System;
 using System.Threading;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.IO;
 using osu.Game.Beatmaps;
@@ -143,7 +144,7 @@ namespace BotServer
 
                 int combo = !query.ContainsKey("combo") ? calculator.GetMaxCombo(playableMap) : int.Parse(query["combo"]);
                 int miss = !query.ContainsKey("miss") ? 0 : int.Parse(query["miss"]);
-                double acc = !query.ContainsKey("acc") ? 1 : double.Parse(query["acc"].Replace(".", ",")) / 100;
+                double acc = !query.ContainsKey("acc") ? 1 : double.Parse(query["acc"], CultureInfo.InvariantCulture) / 100;
                 int score = !query.ContainsKey("score") ? 1000000 : int.Parse(query["score"]);
 
                 double pp = failed
