@@ -99,8 +99,9 @@ namespace BotServer
                     artist = metadata.Artist,
                     creator = metadata.AuthorString,
                     version = map.BeatmapInfo.Version,
-                    beatmapsetID = expirable.SetID,
+                    beatmapsetID = expirable.apiMap.SetID,
                     maxCombo = calculator.GetMaxCombo(playableMap),
+                    status = expirable.apiMap.Status.ToString(),
                     mode,
                     difficulty = getDifficulty(difficulty, attributes),
                     bpm = new

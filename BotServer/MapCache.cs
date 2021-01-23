@@ -51,19 +51,14 @@ namespace BotServer
             var map = new WorkingBeatmap($"{path}/{ID}.osu");
             var expirable = new ExpirableMap { 
                 map = map, 
-                ID = ID,
-                SetID = GetBeatmapsetID(ID)
+                apiMap = GetAPIBeatmap(ID),
+                ID = ID
             };
             maps.Add(expirable);
 
             File.Delete($"{path}/{ID}.osu");
 
             return expirable;
-        }
-
-        private int GetBeatmapsetID(int ID)
-        {
-            return GetAPIBeatmap(ID).SetID;
         }
 
         public APIBeatmap[] GetAPIBeatmapset(int SetID)
@@ -116,8 +111,8 @@ namespace BotServer
         public class ExpirableMap
         {
             public WorkingBeatmap map;
+            public APIBeatmap apiMap;
             public int ID;
-            public int SetID;
             private DateTime ExpiresAt = DateTime.Now.AddMinutes(5);
 
             public bool expired {
@@ -147,8 +142,21 @@ namespace BotServer
             [JsonProperty("beatmap_id")]
             public int ID = 0;
 
+            [JsonProperty("approved")]
+            public BeatmapStatus Status = BeatmapStatus.Graveyard;
+
             [JsonProperty("difficultyrating")]
             public float Stars = 0;
         }
+    }
+
+    public enum BeatmapStatus {
+        Graveyard = -2,
+        WIP = -1,
+        Pending = 0,
+        Ranked = 1,
+        Approved = 2,
+        Qualified = 3,
+        Loved = 4
     }
 }
