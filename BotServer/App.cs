@@ -108,7 +108,7 @@ namespace BotServer
                     {
                         min = Math.Round(controlPointInfo.BPMMinimum),
                         max = Math.Round(controlPointInfo.BPMMaximum),
-                        avg = Math.Round(controlPointInfo.BPMMode)
+                        avg = Math.Round((controlPointInfo.BPMMaximum + controlPointInfo.BPMMinimum) / 2)
                     },
                     length = map.Beatmap.HitObjects.LastOrDefault().StartTime
                 });

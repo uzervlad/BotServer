@@ -62,6 +62,10 @@ namespace BotServer.PPCalculator
         protected override Texture GetBackground() => null;
 
         protected override Track GetBeatmapTrack() => null;
+        public override Stream GetStream(string storagePath)
+        {
+            throw new NotImplementedException();
+        }
 
         public static Ruleset GetRulesetFromLegacyID(int id)
         {

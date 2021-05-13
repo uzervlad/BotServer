@@ -6,23 +6,12 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
-    <PackageReference Include="ppy.osu.Game" Version="2020.1225.0" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Reference Include="osu.Game.Rulesets.Osu">
-      <HintPath>..\Rulesets\osu.Game.Rulesets.Osu.dll</HintPath>
-    </Reference>
-    <Reference Include="osu.Game.Rulesets.Taiko">
-      <HintPath>..\Rulesets\osu.Game.Rulesets.Taiko.dll</HintPath>
-    </Reference>
-    <Reference Include="osu.Game.Rulesets.Catch">
-      <HintPath>..\Rulesets\osu.Game.Rulesets.Catch.dll</HintPath>
-    </Reference>
-    <Reference Include="osu.Game.Rulesets.Mania">
-      <HintPath>..\Rulesets\osu.Game.Rulesets.Mania.dll</HintPath>
-    </Reference>
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
+    <PackageReference Include="ppy.osu.Game" Version="2021.502.0" />
+    <PackageReference Include="ppy.osu.Game.Rulesets.Catch" Version="2021.502.0" />
+    <PackageReference Include="ppy.osu.Game.Rulesets.Mania" Version="2021.502.0" />
+    <PackageReference Include="ppy.osu.Game.Rulesets.Osu" Version="2021.502.0" />
+    <PackageReference Include="ppy.osu.Game.Rulesets.Taiko" Version="2021.502.0" />
   </ItemGroup>
 
 </Project>
