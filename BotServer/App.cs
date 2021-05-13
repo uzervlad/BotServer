@@ -12,6 +12,7 @@ using osu.Game.Rulesets.Catch.Difficulty;
 using BotServer.PPCalculator;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using osu.Game.Beatmaps.ControlPoints;
 using osu.Game.Rulesets;
 using osu.Game.Rulesets.Objects;
 using osu.Game.Rulesets.Osu;
@@ -92,6 +93,11 @@ namespace BotServer
                 var attributes = calculator.Ruleset.CreateDifficultyCalculator(map).Calculate(mods.ToArray());
 
                 var controlPointInfo = map.Beatmap.ControlPointInfo;
+                var timingPoints = controlPointInfo.TimingPoints;
+                var avgBPM = 60000 / (timingPoints
+                    .GroupBy(c => c.BeatLength)
+                    .OrderByDescending(grp => grp.Count())
+                    .FirstOrDefault()?.FirstOrDefault() ?? new TimingControlPoint()).BeatLength;
 
                 var result = JObject.FromObject(new
                 {
@@ -108,7 +114,7 @@ namespace BotServer
                     {
                         min = Math.Round(controlPointInfo.BPMMinimum),
                         max = Math.Round(controlPointInfo.BPMMaximum),
-                        avg = Math.Round((controlPointInfo.BPMMaximum + controlPointInfo.BPMMinimum) / 2)
+                        avg = Math.Round(avgBPM)
                     },
                     length = map.Beatmap.HitObjects.LastOrDefault().StartTime
                 });
