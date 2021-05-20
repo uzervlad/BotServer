@@ -16,6 +16,18 @@ namespace BotServer
             return parsed;
         }
 
+        public static int ParseIntOr(string s, int d)
+        {
+            try
+            {
+                return int.Parse(s);
+            }
+            catch
+            {
+                return d;
+            }
+        }
+
         public static JObject NotEnoughArgumentsError(string[] missingArguments) => JObject.FromObject(new
         {
             error = "Not enough arguments",

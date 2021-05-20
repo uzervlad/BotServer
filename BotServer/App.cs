@@ -67,7 +67,7 @@ namespace BotServer
                 if(!query.ContainsKey("id"))
                     return JsonConvert.SerializeObject(new { error = "No ID provided" });
 
-                var expirable = cache.GetBeatmap(int.Parse(query["id"]));
+                var expirable = cache.GetBeatmap(Helpers.ParseIntOr(query["id"], 0));
                 var map = expirable.map;
                 var metadata = map.Metadata;
 
@@ -79,7 +79,8 @@ namespace BotServer
 
                 if (query.ContainsKey("mode") && map.RulesetID == 0)
                 {
-                    mode = int.Parse(query["mode"]);
+                    mode = Helpers.ParseIntOr(query["mode"], 0);
+                    // mode = int.Parse(query["mode"]);
                     Ruleset ruleset = getRuleset(mode);
                     calculator = PPCalculatorHelpers.GetPPCalculator(mode);
                     var converter = ruleset.CreateBeatmapConverter(playableMap);
@@ -129,14 +130,14 @@ namespace BotServer
                 if(!query.ContainsKey("id"))
                     return JsonConvert.SerializeObject(new { error = "No ID provided" });
 
-                var map = cache.GetBeatmap(int.Parse(query["id"])).map;
+                var map = cache.GetBeatmap(Helpers.ParseIntOr(query["id"], 0)).map;
 
                 var calculator = PPCalculatorHelpers.GetPPCalculator(map.RulesetID);
                 var playableMap = map.GetPlayableBeatmap(calculator.Ruleset.RulesetInfo);
 
                 if (query.ContainsKey("mode") && map.RulesetID == 0)
                 {
-                    int mode = int.Parse(query["mode"]);
+                    int mode = Helpers.ParseIntOr(query["mode"], 0);
                     Ruleset ruleset = getRuleset(mode);
                     calculator = PPCalculatorHelpers.GetPPCalculator(mode);
                     var converter = ruleset.CreateBeatmapConverter(playableMap);
@@ -149,10 +150,10 @@ namespace BotServer
                 var failed = query.ContainsKey("fail");
                 var fail = failed ? calculator.GetTimeAtHits(playableMap, int.Parse(query["fail"])) : 0;
 
-                int combo = !query.ContainsKey("combo") ? calculator.GetMaxCombo(playableMap) : int.Parse(query["combo"]);
-                int miss = !query.ContainsKey("miss") ? 0 : int.Parse(query["miss"]);
+                int combo = !query.ContainsKey("combo") ? calculator.GetMaxCombo(playableMap) : Helpers.ParseIntOr(query["combo"], calculator.GetMaxCombo(playableMap));
+                int miss = !query.ContainsKey("miss") ? 0 : Helpers.ParseIntOr(query["miss"], 0);
                 double acc = !query.ContainsKey("acc") ? 1 : double.Parse(query["acc"], CultureInfo.InvariantCulture) / 100;
-                int score = !query.ContainsKey("score") ? 1000000 : int.Parse(query["score"]);
+                int score = !query.ContainsKey("score") ? 1000000 : Helpers.ParseIntOr(query["id"], 1000000);
 
                 double pp = failed
                     ? calculator.Calculate(map, fail, acc, combo, miss, mods.ToArray(), score)
