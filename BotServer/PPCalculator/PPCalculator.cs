@@ -27,19 +27,19 @@ namespace BotServer.PPCalculator
             return new WorkingBeatmap(tempMap);
         }
 
-        public double Calculate(WorkingBeatmap workingBeatmap, double endTime, double accuracy, int combo, int miss = 0, string[] Mods = null, int score = 0)
+        public double Calculate(WorkingBeatmap workingBeatmap, double endTime, double accuracy, int combo, int miss = 0, int meh = 0, string[] Mods = null, int score = 0)
         {
             workingBeatmap = CropBeatmap(workingBeatmap, endTime);
 
-            return Calculate(workingBeatmap, accuracy, combo, miss, Mods, score);
+            return Calculate(workingBeatmap, accuracy, combo, miss, meh, Mods, score);
         }
 
-        public double Calculate(WorkingBeatmap workingBeatmap, double accuracy, int combo, int miss = 0, string[] Mods = null, int score = 0)
+        public double Calculate(WorkingBeatmap workingBeatmap, double accuracy, int combo, int miss = 0, int meh = 0, string[] Mods = null, int score = 0)
         {
             var mods = getMods(Mods ?? new string[] { });
             var playableBeatmap = workingBeatmap.GetPlayableBeatmap(Ruleset.RulesetInfo, mods);
 
-            var hits = GenerateHitResults(accuracy, playableBeatmap.HitObjects, miss);
+            var hits = GenerateHitResults(accuracy, playableBeatmap.HitObjects, miss, meh);
 
             var scoreInfo = new ScoreInfo()
             {
@@ -85,7 +85,7 @@ namespace BotServer.PPCalculator
         public double GetTimeAtHits(IBeatmap beatmap, int hits) => GetTimeAtHits(beatmap.HitObjects, hits);
         protected abstract double GetTimeAtHits(IReadOnlyList<HitObject> hitObjects, int hits);
 
-        protected abstract Dictionary<HitResult, int> GenerateHitResults(double accuracy, IReadOnlyList<HitObject> hitObjects, int countMiss);
+        protected abstract Dictionary<HitResult, int> GenerateHitResults(double accuracy, IReadOnlyList<HitObject> hitObjects, int countMiss, int countMeh);
 
         protected abstract double GetAccuracy(Dictionary<HitResult, int> hits);
     }

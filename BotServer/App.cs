@@ -156,11 +156,11 @@ namespace BotServer
                 int score = !query.ContainsKey("score") ? 1000000 : Helpers.ParseIntOr(query["id"], 1000000);
 
                 double pp = failed
-                    ? calculator.Calculate(map, fail, acc, combo, miss, mods.ToArray(), score)
-                    : calculator.Calculate(map, acc, combo, miss, mods.ToArray(), score);
+                    ? calculator.Calculate(map, fail, acc, combo, miss, 0, mods.ToArray(), score)
+                    : calculator.Calculate(map, acc, combo, miss, 0, mods.ToArray(), score);
 
-                double fcpp = calculator.Calculate(map, acc, calculator.GetMaxCombo(playableMap), 0, mods.ToArray(), 1000000);
-                double sspp = calculator.Calculate(map, 1, calculator.GetMaxCombo(playableMap), 0, mods.ToArray(), 1000000);
+                double fcpp = calculator.Calculate(map, acc, calculator.GetMaxCombo(playableMap), 0, 0, mods.ToArray(), 1000000);
+                double sspp = calculator.Calculate(map, 1, calculator.GetMaxCombo(playableMap), 0, 0, mods.ToArray(), 1000000);
 
                 return JsonConvert.SerializeObject(new
                 {

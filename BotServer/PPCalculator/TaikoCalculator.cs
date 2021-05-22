@@ -21,7 +21,7 @@ namespace BotServer.PPCalculator
             return hitObjects.OfType<Hit>().ElementAtOrDefault(hits - 1).StartTime;
         }
         
-        protected override Dictionary<HitResult, int> GenerateHitResults(double accuracy, IReadOnlyList<HitObject> hitObjects, int countMiss)
+        protected override Dictionary<HitResult, int> GenerateHitResults(double accuracy, IReadOnlyList<HitObject> hitObjects, int countMiss, int countMeh = 0)
         {
             var totalResultCount = GetMaxCombo(hitObjects);
 

@@ -31,7 +31,7 @@ namespace BotServer.PPCalculator
             return hitObjects.Last().GetEndTime();
         }
 
-        protected override Dictionary<HitResult, int> GenerateHitResults(double accuracy, IReadOnlyList<HitObject> hitObjects, int countMiss)
+        protected override Dictionary<HitResult, int> GenerateHitResults(double accuracy, IReadOnlyList<HitObject> hitObjects, int countMiss, int countMeh = 0)
         {
             var totalHits = hitObjects.Count;
 

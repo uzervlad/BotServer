@@ -23,23 +23,40 @@ namespace BotServer.PPCalculator
                 : hitObjects[hits - 1].GetEndTime();
         }
 
-        protected override Dictionary<HitResult, int> GenerateHitResults(double accuracy, IReadOnlyList<HitObject> hitObjects, int countMiss)
+        protected override Dictionary<HitResult, int> GenerateHitResults(double accuracy, IReadOnlyList<HitObject> hitObjects, int countMiss, int countMeh = 0)
         {
-            var totalResultCount = hitObjects.Count;
+            var nObjects = hitObjects.Count;
+            var countGreat = -1;
+            var countGood = 0;
 
-            var targetTotal = (int)Math.Round(accuracy * totalResultCount * 6);
+            var max300 = nObjects - countMiss;
+            var maxacc = GetAccuracy(new Dictionary<HitResult, int> {
+                { HitResult.Great, max300 },
+                { HitResult.Good, countGood },
+                { HitResult.Meh, countMeh },
+                { HitResult.Miss, countMiss }
+            }) * 100;
 
-            var delta = targetTotal - (totalResultCount - countMiss);
+            countGood = (int)Math.Round(
+                -3 * ((accuracy - 1) * nObjects + countMiss) * 0.5
+            );
 
-            var great = delta / 5;
-            var good = delta % 5;
-            var meh = totalResultCount - great - good - countMiss;
+            if(countGood > max300)
+            {
+                countGood = 0;
+                countMeh = (int)Math.Round(
+                    -6 * ((accuracy - 1) * nObjects + countMiss) * 0.5
+                );
+                countMeh = Math.Min(max300, countMeh);
+            }
+
+            countGreat = nObjects - countGood - countMeh - countMiss;
 
             return new Dictionary<HitResult, int>
             {
-                { HitResult.Great, great },
-                { HitResult.Good, good },
-                { HitResult.Meh, meh },
+                { HitResult.Great, countGreat },
+                { HitResult.Good, countGood },
+                { HitResult.Meh, countMeh },
                 { HitResult.Miss, countMiss }
             };
         }
