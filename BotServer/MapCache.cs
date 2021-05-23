@@ -6,6 +6,8 @@ using System.Threading;
 using System.Collections.Generic;
 using BotServer.PPCalculator;
 using Newtonsoft.Json;
+using System.Threading.Tasks;
+using System.Net.Http;
 
 namespace BotServer
 {
@@ -27,56 +29,54 @@ namespace BotServer
             cleaner.Start();
         }
 
-        public ExpirableMap GetBeatmap(int ID)
+        public async Task<ExpirableMap> GetBeatmap(int ID)
         {
             if(maps.Exists(map => map.ID == ID))
             {
                 var map = maps.Find(map => map.ID == ID);
                 if(map.expired) // Map has expired, redownload
-                    return DownloadMap(ID);
+                    return await DownloadMap(ID);
                 else // Map hasn't expired, return it
                     return map;
             }
             else
-                return DownloadMap(ID);
+                return await DownloadMap(ID);
         }
 
-        private ExpirableMap DownloadMap(int ID)
+        private async Task<ExpirableMap> DownloadMap(int ID)
         {
-            using(var client = new WebClient())
-                client.DownloadFile($"https://osu.ppy.sh/osu/{ID}", $"{ID}.osu");
-
-            var path = Directory.GetCurrentDirectory();
-
-            var map = new WorkingBeatmap($"{path}/{ID}.osu");
-            var expirable = new ExpirableMap { 
-                map = map, 
-                apiMap = GetAPIBeatmap(ID),
-                ID = ID
-            };
-            maps.Add(expirable);
-
-            File.Delete($"{path}/{ID}.osu");
-
-            return expirable;
-        }
-
-        public APIBeatmap[] GetAPIBeatmapset(int SetID)
-        {
-            using(var client = new WebClient())
+            using(var client = new HttpClient())
             {
-                var byte_data = client.DownloadData($"https://osu.ppy.sh/api/get_beatmaps?k={Token}&s={SetID}");
-                var data = JsonConvert.DeserializeObject<APIBeatmap[]>(Encoding.Default.GetString(byte_data));
+                var mapStream = await client.GetStreamAsync($"https://osu.ppy.sh/osu/{ID}");
+                var map = new WorkingBeatmap(mapStream);
+                var expirable = new ExpirableMap
+                {
+                    map = map, ID = ID,
+                    apiMap = await GetAPIBeatmap(ID)
+                };
+                
+                maps.Add(expirable);
+
+                return expirable;
+            }
+        }
+
+        public async Task<APIBeatmap[]> GetAPIBeatmapset(int SetID)
+        {
+            using(var client = new HttpClient())
+            {
+                var raw_data = await client.GetStringAsync($"https://osu.ppy.sh/api/get_beatmaps?k={Token}&s={SetID}");
+                var data = JsonConvert.DeserializeObject<APIBeatmap[]>(raw_data);
                 return data;
             }
         }
 
-        public APIBeatmap GetAPIBeatmap(int ID)
+        public async Task<APIBeatmap> GetAPIBeatmap(int ID)
         {
-            using(var client = new WebClient())
+            using(var client = new HttpClient())
             {
-                var byte_data = client.DownloadData($"https://osu.ppy.sh/api/get_beatmaps?k={Token}&b={ID}");
-                var data = JsonConvert.DeserializeObject<APIBeatmap[]>(Encoding.Default.GetString(byte_data));
+                var raw_data = await client.GetStringAsync($"https://osu.ppy.sh/api/get_beatmaps?k={Token}&b={ID}");
+                var data = JsonConvert.DeserializeObject<APIBeatmap[]>(raw_data);
                 try {
                     return data[0];
                 } catch {
@@ -85,12 +85,12 @@ namespace BotServer
             }
         }
 
-        public APIBeatmap GetAPIBeatmap(string Hash)
+        public async Task<APIBeatmap> GetAPIBeatmap(string Hash)
         {
-            using(var client = new WebClient())
+            using(var client = new HttpClient())
             {
-                var byte_data = client.DownloadData($"https://osu.ppy.sh/api/get_beatmaps?k={Token}&h={Hash}");
-                var data = JsonConvert.DeserializeObject<APIBeatmap[]>(Encoding.Default.GetString(byte_data));
+                var raw_data = await client.GetStringAsync($"https://osu.ppy.sh/api/get_beatmaps?k={Token}&h={Hash}");
+                var data = JsonConvert.DeserializeObject<APIBeatmap[]>(raw_data);
                 try {
                     return data[0];
                 } catch {

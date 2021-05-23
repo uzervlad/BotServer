@@ -19,6 +19,7 @@ using osu.Game.Rulesets.Osu;
 using osu.Game.Rulesets.Taiko;
 using osu.Game.Rulesets.Catch;
 using osu.Game.Rulesets.Mania;
+using System.Threading.Tasks;
 
 namespace BotServer
 {
@@ -58,16 +59,16 @@ namespace BotServer
                     maps = cache.Count
                 });
 
-                return JsonConvert.SerializeObject(result);
+                return Task.FromResult(JsonConvert.SerializeObject(result));
             });
 
-            server.AddEndpoint("/getBeatmap", (req, res) => {
+            server.AddEndpoint("/getBeatmap", async (req, res) => {
                 var query = Helpers.ParseQueryString(req.QueryString);
 
                 if(!query.ContainsKey("id"))
                     return JsonConvert.SerializeObject(new { error = "No ID provided" });
 
-                var expirable = cache.GetBeatmap(Helpers.ParseIntOr(query["id"], 0));
+                var expirable = await cache.GetBeatmap(Helpers.ParseIntOr(query["id"], 0));
                 var map = expirable.map;
                 var metadata = map.Metadata;
 
@@ -123,14 +124,15 @@ namespace BotServer
                 return JsonConvert.SerializeObject(result);
             });
 
-            server.AddEndpoint("/getScorePP", (req, res) => {
+            server.AddEndpoint("/getScorePP", async (req, res) => {
                 // id=80&mods=HD,DT,HR,FL,SO,NF&combo=600&miss=2&acc=98.653452&score=900000&fail=3453
                 var query = Helpers.ParseQueryString(req.QueryString);
 
                 if(!query.ContainsKey("id"))
                     return JsonConvert.SerializeObject(new { error = "No ID provided" });
 
-                var map = cache.GetBeatmap(Helpers.ParseIntOr(query["id"], 0)).map;
+                var expirable = await cache.GetBeatmap(Helpers.ParseIntOr(query["id"], 0));
+                var map = expirable.map;
 
                 var calculator = PPCalculatorHelpers.GetPPCalculator(map.RulesetID);
                 var playableMap = map.GetPlayableBeatmap(calculator.Ruleset.RulesetInfo);
@@ -178,31 +180,31 @@ namespace BotServer
                 });
             });
 
-            server.AddEndpoint("/api/getBeatmap", (req, res) => {
+            server.AddEndpoint("/api/getBeatmap", async (req, res) => {
                 var query = Helpers.ParseQueryString(req.QueryString);
 
                 MapCache.APIBeatmap beatmap;
 
                 if(query.ContainsKey("hash"))
                 {
-                    beatmap = cache.GetAPIBeatmap(query["hash"]);
+                    beatmap = await cache.GetAPIBeatmap(query["hash"]);
                 } 
                 else if(query.ContainsKey("id"))
                 {
-                    beatmap = cache.GetAPIBeatmap(Int32.Parse(query["id"]));
+                    beatmap = await cache.GetAPIBeatmap(Int32.Parse(query["id"]));
                 }
                 else return JsonConvert.SerializeObject(new { error = "No ID or MD5 provided" });
 
                 return JsonConvert.SerializeObject(beatmap);
             });
 
-            server.AddEndpoint("/api/getBeatmapset", (req, res) => {
+            server.AddEndpoint("/api/getBeatmapset", async (req, res) => {
                 var query = Helpers.ParseQueryString(req.QueryString);
 
                 if(!query.ContainsKey("id"))
                     return JsonConvert.SerializeObject(new { error = "No ID provided" });
 
-                return JsonConvert.SerializeObject(cache.GetAPIBeatmapset(Int32.Parse(query["id"])));
+                return JsonConvert.SerializeObject(await cache.GetAPIBeatmapset(Int32.Parse(query["id"])));
             });
         }
 

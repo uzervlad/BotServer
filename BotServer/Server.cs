@@ -12,7 +12,7 @@ namespace BotServer
     {
         private HttpListener listener = new HttpListener();
 
-        public delegate string EndpointCallback(HttpListenerRequest request, HttpListenerResponse response);
+        public delegate Task<string> EndpointCallback(HttpListenerRequest request, HttpListenerResponse response);
         private Dictionary<string, EndpointCallback> endpoints = new Dictionary<string, EndpointCallback>();
 
         private App app;
@@ -48,22 +48,29 @@ namespace BotServer
             {
                 try {
                     var context = listener.GetContextAsync().GetAwaiter().GetResult();
-                    var request = context.Request;
-                    var response = context.Response;
-
-                    var path = request.Url.AbsolutePath;
-
-                    if(endpoints.ContainsKey(path))
-                    {
-                        var result = endpoints.GetValueOrDefault(path)(request, response);
-                        byte[] data = Encoding.UTF8.GetBytes(result);
-                        response.ContentType = "application/json";
-                        response.OutputStream.Write(data);
-                    }
-
-                    response.Close();
+                    ProcessRequest(context);
                 } catch(System.Net.HttpListenerException) {}
             }
+        }
+
+        private async void ProcessRequest(HttpListenerContext context)
+        {
+            try {
+                var request = context.Request;
+                var response = context.Response;
+                var path = request.Url.AbsolutePath;
+
+                if(endpoints.ContainsKey(path))
+                {
+                    var result = await endpoints.GetValueOrDefault(path)(request, response);
+                    byte[] data = Encoding.UTF8.GetBytes(result);
+                    response.ContentType = "application/json";
+                    response.OutputStream.Write(data);
+                }
+
+                response.Close();
+            }
+            catch(HttpListenerException) {}
         }
 
         public void AddEndpoint(string endpoint, EndpointCallback callback)

@@ -24,8 +24,8 @@ namespace BotServer.PPCalculator
 
         public string BackgroundFile => beatmap.Metadata.BackgroundFile;
 
-        public WorkingBeatmap(string file, int? beatmapID = null)
-            : this(readFromFile(file), beatmapID)
+        public WorkingBeatmap(Stream stream, int? beatmapID = null)
+            : this(readFromStream(stream), beatmapID)
         {}
 
         public WorkingBeatmap(IBeatmap beatmap, int? beatmapID = null)
@@ -39,6 +39,12 @@ namespace BotServer.PPCalculator
         private static Beatmap readFromFile(string file)
         {
             using (var stream = File.OpenRead(file))
+            using (var reader = new LineBufferedReader(stream))
+                return Decoder.GetDecoder<Beatmap>(reader).Decode(reader);
+        }
+
+        private static Beatmap readFromStream(Stream stream)
+        {
             using (var reader = new LineBufferedReader(stream))
                 return Decoder.GetDecoder<Beatmap>(reader).Decode(reader);
         }
