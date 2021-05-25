@@ -31,7 +31,7 @@ namespace BotServer.PPCalculator
 
             return new Dictionary<HitResult, int>
             {
-                { HitResult.Perfect, fruitsHit },
+                { HitResult.Great, fruitsHit },
                 { HitResult.SmallTickMiss, Convert.ToInt32(tinyTickMiss) },
                 { HitResult.Miss, countMiss }
             };

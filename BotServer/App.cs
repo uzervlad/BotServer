@@ -125,7 +125,7 @@ namespace BotServer
             });
 
             server.AddEndpoint("/getScorePP", async (req, res) => {
-                // id=80&mods=HD,DT,HR,FL,SO,NF&combo=600&miss=2&acc=98.653452&score=900000&fail=3453
+                // id=80&mods=HD,DT,HR,FL,SO,NF&combo=600&miss=2&n50=2&acc=98.653452&score=900000&fail=3453
                 var query = Helpers.ParseQueryString(req.QueryString);
 
                 if(!query.ContainsKey("id"))
@@ -154,12 +154,13 @@ namespace BotServer
 
                 int combo = !query.ContainsKey("combo") ? calculator.GetMaxCombo(playableMap) : Helpers.ParseIntOr(query["combo"], calculator.GetMaxCombo(playableMap));
                 int miss = !query.ContainsKey("miss") ? 0 : Helpers.ParseIntOr(query["miss"], 0);
+                int n50 = !query.ContainsKey("n50") ? 0 : Helpers.ParseIntOr(query["n50"], 0);
                 double acc = !query.ContainsKey("acc") ? 1 : double.Parse(query["acc"], CultureInfo.InvariantCulture) / 100;
                 int score = !query.ContainsKey("score") ? 1000000 : Helpers.ParseIntOr(query["id"], 1000000);
 
                 double pp = failed
-                    ? calculator.Calculate(map, fail, acc, combo, miss, 0, mods.ToArray(), score)
-                    : calculator.Calculate(map, acc, combo, miss, 0, mods.ToArray(), score);
+                    ? calculator.Calculate(map, fail, acc, combo, miss, n50, mods.ToArray(), score)
+                    : calculator.Calculate(map, acc, combo, miss, n50, mods.ToArray(), score);
 
                 double fcpp = calculator.Calculate(map, acc, calculator.GetMaxCombo(playableMap), 0, 0, mods.ToArray(), 1000000);
                 double sspp = calculator.Calculate(map, 1, calculator.GetMaxCombo(playableMap), 0, 0, mods.ToArray(), 1000000);
