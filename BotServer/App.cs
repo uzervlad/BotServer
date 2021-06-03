@@ -156,7 +156,7 @@ namespace BotServer
                 int miss = !query.ContainsKey("miss") ? 0 : Helpers.ParseIntOr(query["miss"], 0);
                 int n50 = !query.ContainsKey("n50") ? 0 : Helpers.ParseIntOr(query["n50"], 0);
                 double acc = !query.ContainsKey("acc") ? 1 : double.Parse(query["acc"], CultureInfo.InvariantCulture) / 100;
-                int score = !query.ContainsKey("score") ? 1000000 : Helpers.ParseIntOr(query["id"], 1000000);
+                int score = !query.ContainsKey("score") ? 1000000 : Helpers.ParseIntOr(query["score"], 1000000);
 
                 double pp = failed
                     ? calculator.Calculate(map, fail, acc, combo, miss, n50, mods.ToArray(), score)
