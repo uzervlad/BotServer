@@ -101,6 +101,10 @@ namespace BotServer
                     .OrderByDescending(grp => grp.Count())
                     .FirstOrDefault()?.FirstOrDefault() ?? new TimingControlPoint()).BeatLength;
 
+                double rate = 1;
+                foreach (var mod in mods.OfType<IApplicableToRate>())
+                    rate = mod.ApplyToRate(0, rate);
+
                 var result = JObject.FromObject(new
                 {
                     title = metadata.Title,
@@ -114,9 +118,9 @@ namespace BotServer
                     difficulty = getDifficulty(difficulty, attributes),
                     bpm = new
                     {
-                        min = Math.Round(controlPointInfo.BPMMinimum),
-                        max = Math.Round(controlPointInfo.BPMMaximum),
-                        avg = Math.Round(avgBPM)
+                        min = Math.Round(controlPointInfo.BPMMinimum * rate),
+                        max = Math.Round(controlPointInfo.BPMMaximum * rate),
+                        avg = Math.Round(avgBPM * rate)
                     },
                     length = map.Beatmap.HitObjects.LastOrDefault().StartTime
                 });
