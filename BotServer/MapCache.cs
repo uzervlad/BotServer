@@ -47,17 +47,21 @@ namespace BotServer
         {
             using(var client = new HttpClient())
             {
-                var mapStream = await client.GetStreamAsync($"https://osu.ppy.sh/osu/{ID}");
-                var map = new WorkingBeatmap(mapStream);
-                var expirable = new ExpirableMap
-                {
-                    map = map, ID = ID,
-                    apiMap = await GetAPIBeatmap(ID)
-                };
-                
-                maps.Add(expirable);
+                try {
+                    var mapStream = await client.GetStreamAsync($"https://osu.ppy.sh/osu/{ID}");
+                    var map = new WorkingBeatmap(mapStream);
+                    var expirable = new ExpirableMap
+                    {
+                        map = map, ID = ID,
+                        apiMap = await GetAPIBeatmap(ID)
+                    };
+                    
+                    maps.Add(expirable);
 
-                return expirable;
+                    return expirable;
+                } catch(Exception) {
+                    return null;
+                }
             }
         }
 

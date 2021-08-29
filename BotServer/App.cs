@@ -69,6 +69,16 @@ namespace BotServer
                     return JsonConvert.SerializeObject(new { error = "No ID provided" });
 
                 var expirable = await cache.GetBeatmap(Helpers.ParseIntOr(query["id"], 0));
+                if(expirable == null) {
+                    return JsonConvert.SerializeObject(new
+                    {
+                        error = "Unable to download map",
+                        data = new
+                        {
+                            id = query["id"]
+                        }
+                    });
+                }
                 var map = expirable.map;
                 var metadata = map.Metadata;
 
@@ -81,7 +91,6 @@ namespace BotServer
                 if (query.ContainsKey("mode") && map.RulesetID == 0)
                 {
                     mode = Helpers.ParseIntOr(query["mode"], 0);
-                    // mode = int.Parse(query["mode"]);
                     Ruleset ruleset = getRuleset(mode);
                     calculator = PPCalculatorHelpers.GetPPCalculator(mode);
                     var converter = ruleset.CreateBeatmapConverter(playableMap);
@@ -136,6 +145,16 @@ namespace BotServer
                     return JsonConvert.SerializeObject(new { error = "No ID provided" });
 
                 var expirable = await cache.GetBeatmap(Helpers.ParseIntOr(query["id"], 0));
+                if(expirable == null) {
+                    return JsonConvert.SerializeObject(new
+                    {
+                        error = "Unable to download map",
+                        data = new
+                        {
+                            id = query["id"]
+                        }
+                    });
+                }
                 var map = expirable.map;
 
                 var calculator = PPCalculatorHelpers.GetPPCalculator(map.RulesetID);
