@@ -18,13 +18,16 @@ namespace BotServer
                 var cmd = Console.ReadLine();
                 switch(cmd)
                 {
+                    case "":
+                        break;
+                    case "maps":
+                        Console.WriteLine($"[*] {app.cache.Count} maps in cache");
+                        break;
                     case "stop":
                     case "exit":
                     case "close":
                         Console.WriteLine("[~] Stopping...");
                         app.Stop();
-                        break;
-                    case "":
                         break;
                     default:
                         Console.WriteLine("[!] Unknown command");
