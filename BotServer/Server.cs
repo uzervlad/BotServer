@@ -5,6 +5,7 @@ using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Collections.Generic;
+using Newtonsoft.Json;
 
 namespace BotServer
 {
@@ -46,7 +47,8 @@ namespace BotServer
         {
             while(true)
             {
-                try {
+                try
+                {
                     var context = listener.GetContextAsync().GetAwaiter().GetResult();
                     ProcessRequest(context);
                 } catch(System.Net.HttpListenerException) {}
@@ -55,17 +57,34 @@ namespace BotServer
 
         private async void ProcessRequest(HttpListenerContext context)
         {
-            try {
+            try
+            {
                 var request = context.Request;
                 var response = context.Response;
                 var path = request.Url.AbsolutePath;
 
                 if(endpoints.ContainsKey(path))
                 {
-                    var result = await endpoints.GetValueOrDefault(path)(request, response);
-                    byte[] data = Encoding.UTF8.GetBytes(result);
-                    response.ContentType = "application/json";
-                    response.OutputStream.Write(data);
+                    try
+                    {
+                        var result = await endpoints.GetValueOrDefault(path)(request, response);
+                        byte[] data = Encoding.UTF8.GetBytes(result);
+                        response.ContentType = "application/json";
+                        response.OutputStream.Write(data);
+                    }
+                    catch(Exception e)
+                    {
+                        var query = Helpers.ParseQueryString(request.QueryString);
+
+                        var result = JsonConvert.SerializeObject(new
+                        {
+                            error = e.Message,
+                            data = query
+                        });
+                        byte[] data = Encoding.UTF8.GetBytes(result);
+                        response.ContentType = "application/json";
+                        response.OutputStream.Write(data);
+                    }
                 }
 
                 response.Close();
