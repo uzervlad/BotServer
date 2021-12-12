@@ -13,6 +13,7 @@ using osu.Game.Rulesets.Taiko;
 using osu.Game.IO;
 using osu.Framework.Audio.Track;
 using osu.Framework.Graphics.Textures;
+using osu.Game.Skinning;
 
 namespace BotServer.PPCalculator
 {
@@ -64,10 +65,12 @@ namespace BotServer.PPCalculator
 
         public IBeatmap getBeatmap() => GetBeatmap();
 
+        
         protected override IBeatmap GetBeatmap() => beatmap;
         protected override Texture GetBackground() => null;
 
         protected override Track GetBeatmapTrack() => null;
+        protected override ISkin GetSkin() => null;
         public override Stream GetStream(string storagePath)
         {
             throw new NotImplementedException();

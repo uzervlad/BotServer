@@ -109,7 +109,7 @@ namespace BotServer
                     title = metadata.Title,
                     artist = metadata.Artist,
                     creator = metadata.AuthorString,
-                    version = map.BeatmapInfo.Version,
+                    version = map.BeatmapInfo.DifficultyName,
                     beatmapsetID = expirable.apiMap.SetID,
                     maxCombo = calculator.GetMaxCombo(playableMap),
                     status = expirable.apiMap.Status.ToString(),
