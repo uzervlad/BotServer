@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using Newtonsoft.Json.Linq;
@@ -11,7 +12,12 @@ namespace BotServer
             var parsed = new Dictionary<string, string>();
 
             foreach(string key in queryString.Keys)
+            {
+                var value = queryString.Get(key);
+                if(value == null || value == String.Empty)
+                    continue;
                 parsed.Add(key, queryString.Get(key));
+            }
 
             return parsed;
         }
